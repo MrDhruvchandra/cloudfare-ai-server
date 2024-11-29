@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 
-const AudioRecorder = () => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [status, setStatus] = useState('Not Recording');
-  const [apiResponse, setApiResponse] = useState('');
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
+const AudioRecorder: React.FC = () => {
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [status, setStatus] = useState<string>('Not Recording');
+  const [apiResponse, setApiResponse] = useState<Record<string, any> | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const startRecording = async () => {
     try {
@@ -14,7 +14,7 @@ const AudioRecorder = () => {
 
       mediaRecorderRef.current = new MediaRecorder(stream);
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
+      mediaRecorderRef.current.ondataavailable = (event: BlobEvent) => {
         audioChunksRef.current.push(event.data);
       };
 
@@ -41,17 +41,17 @@ const AudioRecorder = () => {
     }
   };
 
-  const sendAudioToAPI = async (audioBlob) => {
+  const sendAudioToAPI = async (audioBlob: Blob) => {
     try {
       const arrayBuffer = await audioBlob.arrayBuffer();
       const audioBytes = Array.from(new Uint8Array(arrayBuffer));
-  
+
       // API Call
       const response = await axios.post(
         'https://my-app.dhruvmaurya298.workers.dev/process-audio',
         { audio: audioBytes }
       );
-  
+
       console.log('API Response:', response.data);
       setApiResponse(response.data); // Save the entire response object
       setStatus('Audio processed successfully!');
@@ -89,18 +89,18 @@ const AudioRecorder = () => {
       </div>
       <p style={styles.status}>{`Status: ${status}`}</p>
       {apiResponse && (
-      <div style={styles.responseContainer}>
-        <h3 style={styles.responseTitle}>API Response:</h3>
-        <pre style={styles.responseText}>
-          {JSON.stringify(apiResponse, null, 2)} {/* Pretty-print object */}
-        </pre>
-      </div>
-    )}
+        <div style={styles.responseContainer}>
+          <h3 style={styles.responseTitle}>API Response:</h3>
+          <pre style={styles.responseText}>
+            {JSON.stringify(apiResponse, null, 2)} {/* Pretty-print object */}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     textAlign: 'center',
     margin: '50px auto',
